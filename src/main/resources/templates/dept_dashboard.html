@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>DCS • Department</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header bg-white border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-primary">Digital Complaint System</h1>
+        <div class="flex items-center space-x-4">
+          <a class="btn" th:href="@{/auth/logout}">Logout</a>
+          <button class="btn btn-outline" type="button" onclick="refreshDept()">Refresh</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h2>Department Dashboard</h2>
+      <p class="text-muted-foreground mt-2">Welcome, <span th:text="${department}"></span> Department</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="dept-stats"></div>
+
+    <!-- Department Analytics -->
+    <section class="card mb-8">
+      <div class="card-header">
+        <h3 class="card-title" th:text="${department} + ' Analytics'"></h3>
+        <p class="card-description">Complaints status in this department</p>
+      </div>
+      <div class="card-content">
+        <div class="w-full overflow-x-auto">
+          <canvas id="deptChart" height="220"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complaints List -->
+    <section class="card">
+      <div class="card-header">
+        <h3 class="card-title">Complaints</h3>
+        <p class="card-description">Manage complaints handled by this department</p>
+      </div>
+      <div class="card-content">
+        <!-- Flash Messages -->
+        <p th:if="${success}" th:text="${success}" class="badge badge-outline" style="color: green;"></p>
+        <p th:if="${error}" th:text="${error}" class="badge badge-outline" style="color: red;"></p>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody id="dept-rows">
+              <tr th:each="c : ${complaints}">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.title}"></td>
+                <td>
+                  <span class="badge" th:text="${c.status}"></span>
+                </td>
+                <td>
+                  <form th:action="@{/dept/update/{id}(id=${c.id})}" method="post" class="flex items-center gap-3">
+                    <select name="status">
+                      <option value="pending">Pending</option>
+                      <option value="in-progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                    </select>
+                    <button type="submit" class="btn btn-outline">Update</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function refreshDept(){ window.location.href = '/dept/dashboard'; }
+
+    function computeCounts() {
+      const rows = Array.from(document.querySelectorAll('#dept-rows tr'));
+      const counts = { pending:0, 'in-progress':0, resolved:0 };
+      rows.forEach(tr => {
+        const statusCell = tr.children[2];
+        const status = ((statusCell && statusCell.textContent) || '').trim().toLowerCase();
+        const key = status.replace(/\s+/g, '-');
+        if (counts[key] !== undefined) counts[key] += 1;
+      });
+      return counts;
+    }
+
+    function renderStats(counts) {
+      const stats = {
+        total: Object.values(counts).reduce((a,b)=>a+b,0),
+        pending: counts['pending'],
+        inProgress: counts['in-progress'],
+        resolved: counts['resolved']
+      };
+      const container = document.getElementById('dept-stats');
+      if (!container) return;
+      container.innerHTML = `
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon total">📊</div>
+            <div><p class="text-sm text-muted-foreground">Total Complaints</p><p class="text-2xl font-bold">${stats.total}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon pending">⏳</div>
+            <div><p class="text-sm text-muted-foreground">Pending</p><p class="text-2xl font-bold">${stats.pending}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon progress">➡️</div>
+            <div><p class="text-sm text-muted-foreground">In Progress</p><p class="text-2xl font-bold">${stats.inProgress}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon resolved">✅</div>
+            <div><p class="text-sm text-muted-foreground">Resolved</p><p class="text-2xl font-bold">${stats.resolved}</p></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChart(counts) {
+      const canvas = document.getElementById('deptChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Pending','In Progress','Resolved'],
+          datasets: [{
+            label: 'Complaints',
+            data: [counts.pending, counts['in-progress'], counts.resolved],
+            backgroundColor: ['#f59e0b','#3b82f6','#22c55e'],
+            borderColor: ['#f59e0b','#3b82f6','#22c55e'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+
+    (function init(){
+      const counts = computeCounts();
+      renderStats(counts);
+      renderChart(counts);
+    })();
+  </script>
+</body>
+</html>

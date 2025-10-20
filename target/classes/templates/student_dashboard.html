@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>DCS • Student</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header bg-white border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-primary">Digital Complaint System</h1>
+        <div class="flex items-center space-x-4">
+          <a class="btn" th:href="@{/auth/logout}">Logout</a>
+          <button class="btn btn-outline" type="button" onclick="refreshStudent()">Refresh</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h2>Student Dashboard</h2>
+      <p class="text-muted-foreground mt-2">Submit and track your complaints</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="student-stats"></div>
+
+    <!-- Submit Complaint -->
+    <section class="card mb-8">
+      <div class="card-header">
+        <h3 class="card-title">Submit New Complaint</h3>
+        <p class="card-description">Provide details and select the category</p>
+      </div>
+      <div class="card-content">
+        <p th:if="${success}" th:text="${success}" class="badge badge-outline" style="color: green;"></p>
+        <p th:if="${error}" th:text="${error}" class="badge badge-outline" style="color: red;"></p>
+        <form th:action="@{/student/complaints}" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label>
+            <span>Title</span>
+            <input type="text" name="title" required />
+          </label>
+          <label>
+            <span>Category</span>
+            <select name="category" required>
+              <option value="facilities">Facilities</option>
+              <option value="food-services">Food Services</option>
+              <option value="academic">Academic</option>
+              <option value="technology">Technology</option>
+              <option value="transportation">Transportation</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label class="md:col-span-2">
+            <span>Description</span>
+            <textarea name="description" rows="4" required></textarea>
+          </label>
+          <div class="md:col-span-2">
+            <button type="submit" class="btn btn-primary">Submit Complaint</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- My Complaints -->
+    <section class="card">
+      <div class="card-header">
+        <h3 class="card-title">My Complaints</h3>
+        <p class="card-description">Track status of submitted complaints</p>
+      </div>
+      <div class="card-content">
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Last Updated</th>
+                <th>Resolved</th>
+              </tr>
+            </thead>
+            <tbody id="student-rows">
+              <tr th:each="c : ${complaints}">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.title}"></td>
+                <td th:text="${c.category}"></td>
+                <td><span class="badge" th:text="${c.status}"></span></td>
+                <td th:text="${c.createdAt != null ? c.createdAt.toLocalDate().toString() : ''}"></td>
+                <td th:text="${c.updatedAt != null ? c.updatedAt.toLocalDate().toString() : ''}"></td>
+                <td th:text="${c.resolvedAt != null ? c.resolvedAt.toLocalDate().toString() : ''}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function refreshStudent(){ window.location.href = '/student/dashboard'; }
+    function computeCounts() {
+      const rows = Array.from(document.querySelectorAll('#student-rows tr'));
+      const counts = { pending:0, 'in-progress':0, resolved:0 };
+      rows.forEach(tr => {
+        const statusCell = tr.children[3];
+        const status = ((statusCell && statusCell.textContent) || '').trim().toLowerCase();
+        const key = status.replace(/\s+/g, '-');
+        if (counts[key] !== undefined) counts[key] += 1;
+      });
+      return counts;
+    }
+    function renderStats(counts) {
+      const stats = {
+        total: Object.values(counts).reduce((a,b)=>a+b,0),
+        pending: counts['pending'],
+        inProgress: counts['in-progress'],
+        resolved: counts['resolved']
+      };
+      const container = document.getElementById('student-stats');
+      if (!container) return;
+      container.innerHTML = `
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon total">📊</div>
+            <div><p class="text-sm text-muted-foreground">Total Complaints</p><p class="text-2xl font-bold">${stats.total}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon pending">⏳</div>
+            <div><p class="text-sm text-muted-foreground">Pending</p><p class="text-2xl font-bold">${stats.pending}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon progress">➡️</div>
+            <div><p class="text-sm text-muted-foreground">In Progress</p><p class="text-2xl font-bold">${stats.inProgress}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon resolved">✅</div>
+            <div><p class="text-sm text-muted-foreground">Resolved</p><p class="text-2xl font-bold">${stats.resolved}</p></div>
+          </div>
+        </div>
+      `;
+    }
+    (function init(){ const counts = computeCounts(); renderStats(counts); })();
+  </script>
+</body>
+</html>

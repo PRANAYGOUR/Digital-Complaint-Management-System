@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>DCS • Admin</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header bg-white border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-primary">Digital Complaint System</h1>
+        <div class="flex items-center space-x-4">
+          <a class="btn" th:href="@{/auth/logout}">Logout</a>
+          <button class="btn btn-outline" type="button" onclick="refreshAdmin()">Refresh</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h2>Admin Dashboard</h2>
+      <p class="text-muted-foreground mt-2">Welcome, Admin</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="admin-stats"></div>
+
+    <!-- Overall Analytics -->
+    <section class="card mb-8">
+      <div class="card-header">
+        <h3 class="card-title">Overall Complaint Status</h3>
+        <p class="card-description">Aggregated status across all departments</p>
+      </div>
+      <div class="card-content">
+        <div class="w-full overflow-x-auto">
+          <canvas id="adminChart" height="220"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- All Complaints (Read-only) -->
+    <section class="card mb-8">
+      <div class="card-header">
+        <h3 class="card-title">All Complaints (Read-only)</h3>
+        <p class="card-description">View every complaint across all departments</p>
+      </div>
+      <div class="card-content">
+        <p th:if="${success}" th:text="${success}" class="badge badge-outline" style="color: green;"></p>
+        <p th:if="${error}" th:text="${error}" class="badge badge-outline" style="color: red;"></p>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Department Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-rows">
+              <tr th:each="c : ${complaints}" class="opacity-80">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.user != null ? c.user.username : 'N/A'}"></td>
+                <td th:text="${c.title}"></td>
+                <td th:text="${c.category}"></td>
+                <td><span class="badge" th:text="${c.status}"></span></td>
+                <td th:text="${c.departmentConfirmed ? 'Dept Confirmed' : 'Pending'}"></td>
+                <td>
+                  <form th:action="@{/admin/send/{id}(id=${c.id})}" method="post" class="inline-flex items-center gap-2">
+                    <button type="submit" class="btn btn-outline">Push Notification</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pending Complaints Board -->
+    <section class="card">
+      <div class="card-header">
+        <h3 class="card-title">Pending Complaints Board</h3>
+        <p class="card-description">Send pending complaints to the appropriate department</p>
+      </div>
+      <div class="card-content">
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="p : ${pendingComplaints}">
+                <td th:text="${p.id}"></td>
+                <td th:text="${p.title}"></td>
+                <td th:text="${p.category}"></td>
+                <td><span class="badge" th:text="${p.status}"></span></td>
+                <td>
+                  <form th:action="@{/admin/send/{id}(id=${p.id})}" method="post" class="inline-flex items-center gap-2">
+                    <button type="submit" class="btn btn-outline">Push to Department</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function refreshAdmin(){ window.location.href = '/admin/dashboard'; }
+
+    function computeCounts() {
+      const rows = Array.from(document.querySelectorAll('#admin-rows tr'));
+      const counts = { pending:0, 'in-progress':0, resolved:0 };
+      rows.forEach(tr => {
+        const statusCell = tr.children[4];
+        const status = ((statusCell && statusCell.textContent) || '').trim().toLowerCase();
+        const key = status.replace(/\s+/g, '-');
+        if (counts[key] !== undefined) counts[key] += 1;
+      });
+      return counts;
+    }
+
+    function renderStats(counts) {
+      const stats = {
+        total: Object.values(counts).reduce((a,b)=>a+b,0),
+        pending: counts['pending'],
+        inProgress: counts['in-progress'],
+        resolved: counts['resolved']
+      };
+      const container = document.getElementById('admin-stats');
+      if (!container) return;
+      container.innerHTML = `
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon total">📊</div>
+            <div><p class="text-sm text-muted-foreground">Total Complaints</p><p class="text-2xl font-bold">${stats.total}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon pending">⏳</div>
+            <div><p class="text-sm text-muted-foreground">Pending</p><p class="text-2xl font-bold">${stats.pending}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon progress">➡️</div>
+            <div><p class="text-sm text-muted-foreground">In Progress</p><p class="text-2xl font-bold">${stats.inProgress}</p></div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="flex items-center space-x-4">
+            <div class="stats-icon resolved">✅</div>
+            <div><p class="text-sm text-muted-foreground">Resolved</p><p class="text-2xl font-bold">${stats.resolved}</p></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChart(counts) {
+      const canvas = document.getElementById('adminChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Pending','In Progress','Resolved'],
+          datasets: [{
+            label: 'Complaints',
+            data: [counts.pending, counts['in-progress'], counts.resolved],
+            backgroundColor: ['#f59e0b','#3b82f6','#22c55e'],
+            borderColor: ['#f59e0b','#3b82f6','#22c55e'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+
+    (function init(){
+      const counts = computeCounts();
+      renderStats(counts);
+      renderChart(counts);
+    })();
+  </script>
+</body>
+</html>

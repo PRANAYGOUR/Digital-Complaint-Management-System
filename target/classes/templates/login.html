@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Login</title></head>
+<body>
+<h2>Login - Select Role</h2>
+<div th:if="${success}" th:text="${success}" style="color:green"></div>
+<div th:if="${error}" th:text="${error}" style="color:red"></div>
+<form method="POST" action="/auth/login">
+<label>Username:</label><input type="text" name="username" required/><br/>
+<label>Password:</label><input type="password" name="password" required/><br/>
+<label>Role:</label>
+<select name="role">
+<option value="STUDENT">Student</option>
+<option value="ADMIN">Admin</option>
+<option value="DEPARTMENT">Department</option>
+</select><br/>
+<button type="submit">Login</button>
+</form>
+<a th:href="@{/auth/register}">Register as Student</a>
+</body>
+</html>

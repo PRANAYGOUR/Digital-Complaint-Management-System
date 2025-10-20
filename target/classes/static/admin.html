@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DCS • Admin</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container flex-between">
+      <h1 class="brand">Digital Complaint System</h1>
+      <nav>
+        <a class="btn" href="#" id="logout">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="flex-between">
+        <h2 class="card-title">Admin Dashboard</h2>
+        <div class="flex-between" style="gap:8px">
+          <button id="refresh" class="btn btn-primary">Refresh Complaints</button>
+        </div>
+      </div>
+      <p id="error" class="alert alert-error hidden"></p>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Student Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function ensureAdmin() {
+      const res = await fetch('/auth/api/me', { credentials: 'include' });
+      if (!res.ok) {
+        window.location.href = '/login.html';
+        return null;
+      }
+      const me = await res.json();
+      if (me.role !== 'ADMIN') {
+        window.location.href = '/student.html';
+        return null;
+      }
+      return me;
+    }
+
+    async function loadComplaints() {
+      const error = document.getElementById('error');
+      error.classList.add('hidden');
+      try {
+        const res = await fetch('/admin/api/complaints', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to load complaints');
+        const data = await res.json();
+        const rows = document.getElementById('rows');
+        rows.innerHTML = '';
+        (data.complaints || []).forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${c.id}</td>
+            <td>${escapeHtml(c.title)}</td>
+            <td>${escapeHtml(c.category)}</td>
+            <td><span class="badge">${escapeHtml(c.status)}</span></td>
+            <td>${escapeHtml(c.submittedAt)}</td>
+            <td>${escapeHtml(c.studentEmail)}</td>
+            <td class="table-actions">
+              <button class="btn" data-action="send" data-id="${c.id}">Send to Dept</button>
+            </td>
+          `;
+          rows.appendChild(tr);
+        });
+      } catch (e) {
+        error.textContent = e.message;
+        error.classList.remove('hidden');
+      }
+    }
+
+    async function adminAction(action, id) {
+      try {
+        if (action === 'send') {
+          await fetch(`/admin/send/${id}`, { method: 'POST', credentials: 'include' });
+        }
+        await loadComplaints();
+      } catch (e) {
+        const error = document.getElementById('error');
+        error.textContent = e.message;
+        error.classList.remove('hidden');
+      }
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const me = await ensureAdmin();
+      if (!me) return;
+      await loadComplaints();
+      document.getElementById('refresh').addEventListener('click', loadComplaints);
+      document.getElementById('rows').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        adminAction(action, id);
+      });
+      const logout = document.getElementById('logout');
+      logout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try { await fetch('/auth/logout', { credentials: 'include' }); } catch {}
+        const prev = document.referrer;
+        if (prev && prev.startsWith(window.location.origin)) {
+          window.location.href = prev;
+        } else {
+          window.location.href = '/index.html';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Complaint System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header bg-white border-b border-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <h1 class="text-primary cursor-pointer" onclick="navigateTo('home')">
+                        Digital Complaint System
+                    </h1>
+                    <nav class="hidden md:flex space-x-4">
+                        <button class="nav-btn" data-page="about">About</button>
+                        <button class="nav-btn" data-page="contact">Contact</button>
+                        <button class="nav-btn dashboard-btn" data-page="dashboard" style="display: none;">Dashboard</button>
+                    </nav>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="user-info" style="display: none;">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2 text-sm text-muted-foreground">
+                                <i data-lucide="user" class="h-4 w-4 user-icon"></i>
+                                <span class="user-type-text capitalize"></span>
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="logout()">
+                                <i data-lucide="log-out" class="h-4 w-4 mr-2"></i>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn login-btn" onclick="navigateTo('login')">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+                <!-- Hero Section -->
+                <section class="relative py-20 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-7xl mx-auto text-center">
+                        <h1 class="text-4xl md:text-6xl mb-6 text-gray-900">
+                            Digital Complaint System
+                        </h1>
+                        <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                            A modern, efficient platform for students to submit complaints and for administrators 
+                            to manage and resolve them quickly and transparently.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button class="btn btn-lg px-8 py-3" onclick="navigateTo('login')">
+                                Get Started
+                            </button>
+                            <button class="btn btn-outline btn-lg px-8 py-3" onclick="navigateTo('about')">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl mb-4 text-gray-900">
+                                Why Choose Our System?
+                            </h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                                Built with modern technology and user experience in mind
+                            </p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="card text-center">
+                                <div class="card-content p-6">
+                                    <div class="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                                        <i data-lucide="message-square" class="h-6 w-6 text-blue-600"></i>
+                                    </div>
+                                    <h3 class="text-lg mb-2">Easy Submission</h3>
+                                    <p class="text-gray-600 text-sm">
+                                        Submit complaints quickly with our intuitive interface
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="card text-center">
+                                <div class="card-content p-6">
+                                    <div class="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                                        <i data-lucide="trending-up" class="h-6 w-6 text-green-600"></i>
+                                    </div>
+                                    <h3 class="text-lg mb-2">Real-time Tracking</h3>
+                                    <p class="text-gray-600 text-sm">
+                                        Track your complaint status from submission to resolution
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="card text-center">
+                                <div class="card-content p-6">
+                                    <div class="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                                        <i data-lucide="shield" class="h-6 w-6 text-purple-600"></i>
+                                    </div>
+                                    <h3 class="text-lg mb-2">Admin Dashboard</h3>
+                                    <p class="text-gray-600 text-sm">
+                                        Comprehensive management tools for administrators
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="card text-center">
+                                <div class="card-content p-6">
+                                    <div class="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                                        <i data-lucide="file-text" class="h-6 w-6 text-orange-600"></i>
+                                    </div>
+                                    <h3 class="text-lg mb-2">Detailed Reports</h3>
+                                    <p class="text-gray-600 text-sm">
+                                        Analytics and insights for better decision making
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Access Section -->
+                <section class="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl mb-4 text-gray-900">
+                                Quick Access
+                            </h2>
+                            <p class="text-lg text-gray-600">
+                                Choose your role to get started
+                            </p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="card hover:shadow-lg transition-shadow">
+                                <div class="card-header text-center">
+                                    <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                        <i data-lucide="users" class="h-8 w-8 text-blue-600"></i>
+                                    </div>
+                                    <h3 class="card-title text-xl">Student Portal</h3>
+                                </div>
+                                <div class="card-content text-center">
+                                    <p class="text-gray-600 mb-6">
+                                        Submit and track your complaints with ease. Get real-time updates 
+                                        on the status of your submissions.
+                                    </p>
+                                    <button class="btn w-full" onclick="navigateTo('login')">
+                                        Login as Student
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="card hover:shadow-lg transition-shadow">
+                                <div class="card-header text-center">
+                                    <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                        <i data-lucide="shield" class="h-8 w-8 text-green-600"></i>
+                                    </div>
+                                    <h3 class="card-title text-xl">Admin Portal</h3>
+                                </div>
+                                <div class="card-content text-center">
+                                    <p class="text-gray-600 mb-6">
+                                        Manage complaints efficiently with analytics, status updates, 
+                                        and comprehensive reporting tools.
+                                    </p>
+                                    <button class="btn btn-outline w-full" onclick="navigateTo('login')">
+                                        Login as Admin
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testimonials Section -->
+                <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl mb-4 text-gray-900">
+                                What Our Users Say
+                            </h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                                Real feedback from students and administrators who use our system daily
+                            </p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="card bg-gradient-to-br from-blue-50 to-blue-100">
+                                <div class="card-content p-6">
+                                    <div class="flex items-center mb-4">
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current"></i>
+                                    </div>
+                                    <p class="text-gray-700 mb-4">
+                                        "The complaint system is so easy to use! I submitted my dorm issue and got a response within 2 days. The tracking feature helped me stay updated throughout the process."
+                                    </p>
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white mr-3">
+                                            SM
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Sarah Martinez</p>
+                                            <p class="text-sm text-gray-600">Computer Science Student</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card bg-gradient-to-br from-green-50 to-green-100">
+                                <div class="card-content p-6">
+                                    <div class="flex items-center mb-4">
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current"></i>
+                                    </div>
+                                    <p class="text-gray-700 mb-4">
+                                        "As an admin, this system has revolutionized how we handle student complaints. The analytics dashboard gives us great insights, and the workflow is seamless."
+                                    </p>
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white mr-3">
+                                            DJ
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Dr. James Wilson</p>
+                                            <p class="text-sm text-gray-600">Dean of Student Affairs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card bg-gradient-to-br from-purple-50 to-purple-100">
+                                <div class="card-content p-6">
+                                    <div class="flex items-center mb-4">
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current"></i>
+                                    </div>
+                                    <p class="text-gray-700 mb-4">
+                                        "Finally, a transparent way to report issues! I love how I can see exactly where my complaint stands in the process. The department responses are always helpful."
+                                    </p>
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white mr-3">
+                                            AK
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Alex Kim</p>
+                                            <p class="text-sm text-gray-600">Business Administration Student</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 grid md:grid-cols-2 gap-8">
+                            <div class="card bg-gradient-to-br from-orange-50 to-orange-100">
+                                <div class="card-content p-6">
+                                    <div class="flex items-center mb-4">
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-gray-300"></i>
+                                    </div>
+                                    <p class="text-gray-700 mb-4">
+                                        "The system works great for most issues. I appreciate the email notifications and the ability to categorize complaints properly. Would love to see a mobile app in the future!"
+                                    </p>
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white mr-3">
+                                            MR
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Maria Rodriguez</p>
+                                            <p class="text-sm text-gray-600">Engineering Student</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card bg-gradient-to-br from-indigo-50 to-indigo-100">
+                                <div class="card-content p-6">
+                                    <div class="flex items-center mb-4">
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current mr-1"></i>
+                                        <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-current"></i>
+                                    </div>
+                                    <p class="text-gray-700 mb-4">
+                                        "Excellent system! As a facilities manager, I can quickly see which issues need urgent attention. The department email routing feature saves us so much time."
+                                    </p>
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white mr-3">
+                                            TB
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Tom Brown</p>
+                                            <p class="text-sm text-gray-600">Facilities Manager</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="about-page" class="page" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12">
+                    <h1>About Our Digital Complaint System</h1>
+                    <p class="text-muted-foreground mt-4 max-w-3xl mx-auto">
+                        Our digital complaint system is designed to streamline the process of submitting, 
+                        tracking, and resolving complaints in educational institutions. We provide a 
+                        transparent and efficient platform for both students and administrators.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-primary/10 rounded-lg">
+                                    <i data-lucide="message-square" class="h-6 w-6 text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-lg">Easy Complaint Submission</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-muted-foreground text-base">
+                                Students can quickly submit complaints with detailed descriptions and categories.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-primary/10 rounded-lg">
+                                    <i data-lucide="clock" class="h-6 w-6 text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-lg">Real-time Tracking</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-muted-foreground text-base">
+                                Track the status of your complaints from submission to resolution.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-primary/10 rounded-lg">
+                                    <i data-lucide="shield" class="h-6 w-6 text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-lg">Admin Management</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-muted-foreground text-base">
+                                Administrators can efficiently manage and respond to all complaints.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-primary/10 rounded-lg">
+                                    <i data-lucide="users" class="h-6 w-6 text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-lg">Role-based Access</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-muted-foreground text-base">
+                                Different interfaces for students and administrators with appropriate permissions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-primary/10 rounded-lg">
+                                    <i data-lucide="file-text" class="h-6 w-6 text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-lg">Detailed Reports</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-muted-foreground text-base">
+                                Generate comprehensive reports on complaint trends and resolution times.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-primary/10 rounded-lg">
+                                    <i data-lucide="check-circle" class="h-6 w-6 text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-lg">Status Updates</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-muted-foreground text-base">
+                                Automatic notifications and status updates throughout the complaint lifecycle.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-muted/50 rounded-lg p-8">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h2>Our Mission</h2>
+                            <p class="text-muted-foreground mt-3">
+                                To create a transparent, efficient, and user-friendly platform that facilitates 
+                                effective communication between students and administration, ensuring that every 
+                                complaint is heard and addressed promptly.
+                            </p>
+                        </div>
+                        <div>
+                            <h2>Why Choose Us?</h2>
+                            <ul class="text-muted-foreground mt-3 space-y-2">
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Secure and confidential complaint handling
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0"></i>
+                                    24/7 system availability
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Fast response times and resolution tracking
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0"></i>
+                                    User-friendly interface for all users
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact-page" class="page" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12">
+                    <h1>Contact Us</h1>
+                    <p class="text-muted-foreground mt-4 max-w-2xl mx-auto">
+                        Have questions about our complaint system? Need technical support? 
+                        We're here to help. Reach out to us using any of the methods below.
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Send us a Message</h3>
+                                <p class="card-description">
+                                    Fill out the form below and we'll get back to you as soon as possible.
+                                </p>
+                            </div>
+                            <div class="card-content">
+                                <form id="contact-form" class="space-y-6">
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label for="contact-name">Full Name</label>
+                                            <input
+                                                type="text"
+                                                id="contact-name"
+                                                name="name"
+                                                placeholder="Your full name"
+                                                required
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label for="contact-email">Email Address</label>
+                                            <input
+                                                type="email"
+                                                id="contact-email"
+                                                name="email"
+                                                placeholder="your.email@example.com"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="contact-subject">Subject</label>
+                                        <input
+                                            type="text"
+                                            id="contact-subject"
+                                            name="subject"
+                                            placeholder="What is this regarding?"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="contact-message">Message</label>
+                                        <textarea
+                                            id="contact-message"
+                                            name="message"
+                                            placeholder="Please describe your inquiry in detail..."
+                                            rows="6"
+                                            required
+                                        ></textarea>
+                                    </div>
+                                    <button type="submit" class="btn w-full">
+                                        <i data-lucide="send" class="h-4 w-4 mr-2"></i>
+                                        Send Message
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Contact Information</h3>
+                            </div>
+                            <div class="card-content space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="phone" class="h-5 w-5 text-primary mt-1"></i>
+                                    <div>
+                                        <p class="font-medium">Phone</p>
+                                        <p class="text-muted-foreground">+1 (555) 123-4567</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="mail" class="h-5 w-5 text-primary mt-1"></i>
+                                    <div>
+                                        <p class="font-medium">Email</p>
+                                        <p class="text-muted-foreground">support@complaints.edu</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="map-pin" class="h-5 w-5 text-primary mt-1"></i>
+                                    <div>
+                                        <p class="font-medium">Address</p>
+                                        <p class="text-muted-foreground">
+                                            123 Education Street<br />
+                                            University Campus<br />
+                                            City, State 12345
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Office Hours</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="clock" class="h-5 w-5 text-primary mt-1"></i>
+                                    <div class="space-y-1">
+                                        <p class="font-medium">Monday - Friday</p>
+                                        <p class="text-muted-foreground">8:00 AM - 6:00 PM</p>
+                                        <p class="font-medium">Saturday</p>
+                                        <p class="text-muted-foreground">9:00 AM - 2:00 PM</p>
+                                        <p class="font-medium">Sunday</p>
+                                        <p class="text-muted-foreground">Closed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Technical Support</h3>
+                            </div>
+                            <div class="card-content">
+                                <p class="text-muted-foreground">
+                                    For technical issues with the complaint system, please email us at 
+                                    <span class="text-primary"> tech-support@complaints.edu</span> or 
+                                    call our 24/7 helpline at <span class="text-primary">+1 (555) 987-6543</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div id="login-page" class="page" style="display: none;">
+            <div class="min-h-[80vh] flex items-center justify-center px-4">
+                <div class="w-full max-w-md space-y-6">
+                    <div class="text-center">
+                        <h2>Login to Your Account</h2>
+                        <p class="text-muted-foreground mt-2">
+                            Choose your account type and sign in to continue
+                        </p>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button class="btn flex-1 login-type-btn active" data-type="student" onclick="setLoginType('student')">
+                            <i data-lucide="user" class="h-4 w-4 mr-2"></i>
+                            Student
+                        </button>
+                        <button class="btn btn-outline flex-1 login-type-btn" data-type="admin" onclick="setLoginType('admin')">
+                            <i data-lucide="shield" class="h-4 w-4 mr-2"></i>
+                            Admin
+                        </button>
+                        <!-- added department login option -->
+                        <button class="btn btn-outline flex-1 login-type-btn" data-type="department" onclick="setLoginType('department')">
+                            <i data-lucide="building-2" class="h-4 w-4 mr-2"></i>
+                            Department
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title flex items-center">
+                                <i data-lucide="user" class="h-5 w-5 mr-2 login-icon"></i>
+                                <span class="login-title">Student Login</span>
+                            </h3>
+                            <p class="card-description login-description">
+                                Submit and track your complaints
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <form id="login-form" class="space-y-4">
+                                <div class="space-y-2">
+                                    <label for="login-email">Username or Email</label>
+                                    <div class="relative">
+                                        <i data-lucide="mail" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                                        <input
+                                            type="text"
+                                            id="login-email"
+                                            name="email"
+                                            placeholder="student@school.edu"
+                                            style="padding-left: 2.5rem;"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="login-password">Password</label>
+                                    <div class="relative">
+                                        <i data-lucide="lock" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                                        <input
+                                            type="password"
+                                            id="login-password"
+                                            name="password"
+                                            placeholder="Enter your password"
+                                            style="padding-left: 2.5rem;"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn w-full">
+                                    <span class="login-submit-text">Sign In as Student</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-sm text-muted-foreground">
+                            Demo department accounts: tech / tech123 (it@university.edu) or facilities / facilities123 (facilities@university.edu)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Dashboard -->
+        <div id="student-dashboard" class="page" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1>Student Dashboard</h1>
+                        <p class="text-muted-foreground mt-2">Hello, <span id="student-username"></span></p>
+                    </div>
+                    <button class="btn" onclick="toggleComplaintForm()">
+                        <i data-lucide="plus" class="h-4 w-4 mr-2"></i>
+                        Submit New Complaint
+                    </button>
+                </div>
+
+                <!-- Complaint Form -->
+                <div id="complaint-form-card" class="card mb-8" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">Submit New Complaint</h3>
+                        <p class="card-description">
+                            Provide details about your complaint and we'll address it as soon as possible.
+                        </p>
+                    </div>
+                    <div class="card-content">
+                        <form id="complaint-form" class="space-y-6">
+                            <div class="space-y-2">
+                                <label for="complaint-title">Complaint Title</label>
+                                <input
+                                    type="text"
+                                    id="complaint-title"
+                                    name="title"
+                                    placeholder="Brief description of the issue"
+                                    required
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <label for="complaint-category">Category</label>
+                                <select id="complaint-category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <option value="facilities">Facilities</option>
+                                    <option value="food-services">Food Services</option>
+                                    <option value="academic">Academic</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="transportation">Transportation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="complaint-description">Detailed Description</label>
+                                <textarea
+                                    id="complaint-description"
+                                    name="description"
+                                    placeholder="Please provide a detailed description of your complaint..."
+                                    rows="4"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div class="flex space-x-4">
+                                <button type="submit" class="btn">Submit Complaint</button>
+                                <button type="button" class="btn btn-outline" onclick="toggleComplaintForm()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Complaints List -->
+                <div class="space-y-6">
+                    <h2>Your Complaints</h2>
+                    <div id="student-complaints-container">
+                        <!-- Student complaints will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="page" style="display: none;">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="mb-8">
+                    <h1>Admin Dashboard</h1>
+                    <p class="text-muted-foreground mt-2">Welcome back, <span id="admin-username"></span></p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="admin-stats">
+                    <!-- Stats will be populated here -->
+                </div>
+
+                <!-- Category Analytics -->
+                <div class="card mb-8">
+                  <div class="card-header">
+                    <h3 class="card-title">Category Analytics</h3>
+                    <p class="card-description">Visualize complaints by category or status within a category</p>
+                  </div>
+                  <div class="card-content">
+                    <div class="flex items-center gap-4 mb-4 flex-wrap">
+                      <div class="flex items-center gap-2">
+                        <label for="admin-chart-type" class="text-sm text-muted-foreground">Chart Type</label>
+                        <select id="admin-chart-type" class="btn btn-outline">
+                          <option value="bar">Bar</option>
+                          <option value="pie">Pie</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <label for="admin-category-select" class="text-sm text-muted-foreground">Category</label>
+                        <select id="admin-category-select" class="btn btn-outline">
+                          <!-- options populated dynamically -->
+                        </select>
+                      </div>
+                      <span class="text-xs text-muted-foreground">Select a category to see status distribution; choose "All" to see category distribution</span>
+                    </div>
+                    <div class="w-full overflow-x-auto">
+                      <canvas id="admin-category-chart" height="220"></canvas>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Status Distribution -->
+                <div class="card mb-8">
+                  <div class="card-header">
+                    <h3 class="card-title">Status Distribution</h3>
+                    <p class="card-description">Overall complaint status breakdown across the system</p>
+                  </div>
+                  <div class="card-content">
+                    <div class="w-full overflow-x-auto">
+                      <canvas id="admin-status-chart" height="220"></canvas>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Resolution Trend -->
+                <div class="card mb-8">
+                  <div class="card-header">
+                    <h3 class="card-title">Resolution Trend</h3>
+                    <p class="card-description">Resolved complaints over time</p>
+                  </div>
+                  <div class="card-content">
+                    <div class="flex items-center gap-4 mb-4 flex-wrap">
+                      <div class="flex items-center gap-2">
+                        <label for="admin-period-select" class="text-sm text-muted-foreground">Period</label>
+                        <select id="admin-period-select" class="btn btn-outline">
+                          <option value="30">Last 30 days</option>
+                          <option value="60">Last 60 days</option>
+                          <option value="90">Last 90 days</option>
+                        </select>
+                      </div>
+                      <span class="text-xs text-muted-foreground">Shows number of resolved complaints per day</span>
+                    </div>
+                    <div class="w-full overflow-x-auto">
+                      <canvas id="admin-resolution-chart" height="220"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <!-- Complaints List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All Complaints</h3>
+                        <p class="card-description">
+                            Manage and respond to student complaints
+                        </p>
+                    </div>
+                    <div class="card-content">
+                        <div id="admin-complaints-container">
+                            <!-- Admin complaints will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Support Button -->
+    <button id="support-btn" class="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-shadow z-50 btn" onclick="openSupportPopup()">
+        <i data-lucide="help-circle" class="h-6 w-6"></i>
+    </button>
+
+    <!-- Support Popup -->
+    <div id="support-popup" class="modal" style="display: none;">
+        <div class="modal-content sm:max-w-md">
+            <div class="modal-header">
+                <h3 class="modal-title flex items-center gap-2">
+                    <i data-lucide="help-circle" class="h-5 w-5 text-primary"></i>
+                    Quick Support
+                </h3>
+                <button class="modal-close" onclick="closeSupportPopup()">
+                    <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted-foreground mb-4">
+                    Need help? Send us a message and we'll get back to you quickly!
+                </p>
+                
+                <form id="support-form" class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="support-name">Your Name</label>
+                        <input
+                            type="text"
+                            id="support-name"
+                            name="name"
+                            placeholder="Enter your full name"
+                            required
+                        />
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="support-email">Email Address</label>
+                        <input
+                            type="email"
+                            id="support-email"
+                            name="email"
+                            placeholder="your.email@example.com"
+                            required
+                        />
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="support-message">How can we help?</label>
+                        <textarea
+                            id="support-message"
+                            name="message"
+                            placeholder="Describe your question or issue..."
+                            rows="3"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-2">
+                        <button type="submit" class="btn flex-1">
+                            <i data-lucide="send" class="h-4 w-4 mr-2"></i>
+                            Send Message
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeSupportPopup()">
+                            <i data-lucide="x" class="h-4 w-4"></i>
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-4 p-3 bg-muted rounded-lg">
+                    <p class="text-sm text-muted-foreground">
+                        <strong>Response Time:</strong> We typically respond within 24 hours during business days.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unattended Complaints Popup -->
+    <div id="unattended-popup" class="modal" style="display: none;">
+        <div class="modal-content sm:max-w-lg">
+            <div class="modal-header">
+                <h3 class="modal-title flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="h-5 w-5 text-primary"></i>
+                    Unattended Complaints
+                </h3>
+                <button class="modal-close" onclick="closeUnattendedPopup()">
+                    <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted-foreground mb-3">The following complaints appear unattended. You can view or push them to the relevant department.</p>
+                <div id="unattended-list"></div>
+                <div class="mt-4 flex justify-end gap-2">
+                    <button class="btn btn-outline" onclick="closeUnattendedPopup()">
+                        <i data-lucide="x" class="h-4 w-4 mr-2"></i>
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Management Modal -->
+    <div id="complaint-modal" class="modal" style="display: none;">
+        <div class="modal-content max-w-2xl">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-complaint-title">Manage Complaint</h3>
+                <button class="modal-close" onclick="closeComplaintModal()">
+                    <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-complaint-content">
+                    <!-- Complaint details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DCS • Student</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container flex-between">
+      <h1 class="brand">Digital Complaint System</h1>
+      <nav>
+        <a class="btn" href="#" id="logout">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2 class="card-title">Submit a Complaint</h2>
+      <p id="error" class="alert alert-error hidden"></p>
+      <form id="submit-form" class="form-grid">
+        <label>
+          <span>Title</span>
+          <input type="text" id="title" placeholder="e.g. Wi-Fi issue in library" required />
+        </label>
+        <label>
+          <span>Category</span>
+          <select id="category">
+            <option value="facilities">Facilities</option>
+            <option value="food-services">Food Services</option>
+            <option value="academic">Academic</option>
+            <option value="technology">Technology</option>
+            <option value="transportation">Transportation</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Description</span>
+          <textarea id="description" rows="4" placeholder="Describe the issue" required></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </form>
+    </section>
+
+    <section class="card" style="margin-top:24px">
+      <div class="flex-between">
+        <h2 class="card-title">My Complaints</h2>
+        <button id="refresh" class="btn">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Department</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function ensureStudent() {
+      const res = await fetch('/auth/api/me', { credentials: 'include' });
+      if (!res.ok) {
+        window.location.href = '/login.html';
+        return null;
+      }
+      const me = await res.json();
+      if (me.role !== 'STUDENT') {
+        window.location.href = '/admin.html';
+        return null;
+      }
+      return me;
+    }
+
+    async function loadComplaints() {
+      const res = await fetch('/student/api/complaints', { credentials: 'include' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const rows = document.getElementById('rows');
+      rows.innerHTML = '';
+      (data.complaints || []).forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.id}</td>
+          <td>${escapeHtml(c.title)}</td>
+          <td>${escapeHtml(c.category)}</td>
+          <td><span class="badge">${escapeHtml(c.status)}</span></td>
+          <td>${escapeHtml(c.submittedAt)}</td>
+          <td>${escapeHtml(c.departmentEmail)}</td>
+        `;
+        rows.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const me = await ensureStudent();
+      if (!me) return;
+      await loadComplaints();
+      document.getElementById('refresh').addEventListener('click', loadComplaints);
+
+      document.getElementById('submit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const error = document.getElementById('error');
+        error.classList.add('hidden');
+        const title = document.getElementById('title').value.trim();
+        const category = document.getElementById('category').value;
+        const description = document.getElementById('description').value.trim();
+        try {
+          const res = await fetch('/student/api/complaints', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ title, category, description })
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.error || 'Failed to submit complaint');
+          }
+          document.getElementById('submit-form').reset();
+          await loadComplaints();
+        } catch (e) {
+          error.textContent = e.message;
+          error.classList.remove('hidden');
+        }
+      });
+
+      const logout = document.getElementById('logout');
+      logout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await fetch('/auth/logout', { credentials: 'include' });
+        window.location.href = '/login.html';
+      });
+    });
+  </script>
+</body>
+</html>
